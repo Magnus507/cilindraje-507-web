@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { MapPin, Camera, Save, Loader2, ChevronLeft, Shield, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 const PROVINCIAS_FALLBACK = [
   "Panamá", "Panamá Oeste", "Chiriquí", "Coclé", "Colón", "Herrera", "Los Santos", "Veraguas", "Bocas del Toro", "Darién"
