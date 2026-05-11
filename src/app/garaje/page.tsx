@@ -33,11 +33,10 @@ export default function GarajePage() {
     setSaving(false);
   };
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
         <header>
           <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Mi Garaje</h1>
           <p className="text-muted text-sm font-mono tracking-widest">PERSONALIZACIÓN Y TELEMETRÍA DE MÁQUINA</p>
@@ -120,6 +119,6 @@ export default function GarajePage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

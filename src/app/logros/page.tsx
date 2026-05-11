@@ -32,11 +32,10 @@ export default function LogrosPage() {
     { id: 6, title: "Maestro del Cilindraje", desc: "Llega a 25,000 puntos", req: 25000, current: profile?.total_points || 0, icon: <ShieldCheck className="w-5 h-5" /> },
   ];
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8">
         <header>
           <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Logros y Condecoraciones</h1>
           <p className="text-muted text-sm font-mono tracking-widest uppercase">Historial de Hazañas en la Carretera</p>
@@ -73,7 +72,7 @@ export default function LogrosPage() {
           })}
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }
 

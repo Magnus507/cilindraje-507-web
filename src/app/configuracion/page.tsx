@@ -34,11 +34,10 @@ export default function ConfiguracionPage() {
     setSaving(false);
   };
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8">
         <header>
           <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Configuración</h1>
           <p className="text-muted text-sm font-mono tracking-widest uppercase">Gestión de Perfil e Identidad Digital</p>
@@ -99,6 +98,6 @@ export default function ConfiguracionPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

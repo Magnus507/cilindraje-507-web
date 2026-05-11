@@ -24,11 +24,10 @@ export default function MapaPage() {
     load();
   }, []);
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="h-full flex flex-col space-y-4">
+    <div className="h-full flex flex-col space-y-4">
         <header className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-black text-white tracking-tight uppercase italic flex items-center gap-3">
@@ -78,6 +77,6 @@ export default function MapaPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

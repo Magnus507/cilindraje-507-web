@@ -35,11 +35,10 @@ export default function RankingPage() {
     setLoading(false);
   };
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8">
         <header className="flex items-end justify-between">
           <div>
             <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Hall de la Fama</h1>
@@ -150,6 +149,6 @@ export default function RankingPage() {
           </div>
         )}
       </div>
-    </AppLayout>
+    </div>
   );
 }
