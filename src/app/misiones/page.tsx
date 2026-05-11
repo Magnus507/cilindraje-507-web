@@ -1,21 +1,41 @@
 "use client";
 
-import { MapPin, Plus, Target, Info, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { MapPin, Plus, Target, Info, CheckCircle2, Clock, AlertCircle, Zap, Navigation } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function MisionesPage() {
   const [proposals, setProposals] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // We fetch the user's proposed stickers/points
-        const { data } = await supabase.from("stickers").select("*").eq("creator_id", session.user.id);
-        setProposals(data || []);
+        // Fetch profile to get province
+        const { data: p } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+        setProfile(p);
+
+        // Fetch user's proposals
+        const { data: pr } = await supabase.from("stickers").select("*").eq("creator_id", session.user.id);
+        setProposals(pr || []);
+
+        // Fetch recommendations based on province
+        if (p?.province) {
+          // Get territory ID for that province name
+          const { data: ter } = await supabase.from("territories").select("id").eq("name", p.province).single();
+          if (ter) {
+            const { data: rec } = await supabase.from("stickers")
+              .select("*")
+              .eq("territory_id", ter.id)
+              .eq("is_active", true)
+              .limit(3);
+            setRecommendations(rec || []);
+          }
+        }
       }
       setLoading(false);
     }
@@ -23,7 +43,7 @@ export default function MisionesPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12">
       <header className="flex items-end justify-between">
         <div>
           <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Operaciones de Campo</h1>
@@ -37,8 +57,9 @@ export default function MisionesPage() {
       </header>
 
       <div className="grid grid-cols-12 gap-8">
-        {/* Active Missions */}
-        <div className="col-span-8 space-y-6">
+        {/* Active Missions & Recommendations */}
+        <div className="col-span-8 space-y-8">
+          {/* Season Mission */}
           <div className="card p-6 border-primary/20 bg-gradient-to-br from-surface to-primary/5">
              <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-primary/10 rounded-xl text-primary">
@@ -56,7 +77,7 @@ export default function MisionesPage() {
                   <div className="w-12 h-12 bg-surface-light rounded-lg flex items-center justify-center font-black text-primary">01</div>
                   <div>
                     <h4 className="text-sm font-bold text-white uppercase">El Despertar del Canal</h4>
-                    <p className="text-[10px] text-muted">Escanea 3 puntos en la provincia de Panamá.</p>
+                    <p className="text-[10px] text-muted">Escanea 3 puntos en la provincia de {profile?.province || "Panamá"}.</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -67,6 +88,34 @@ export default function MisionesPage() {
             </div>
           </div>
 
+          {/* Recommended Points */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-black text-white uppercase italic flex items-center gap-2">
+              <Navigation className="w-4 h-4 text-primary" /> Nodos Cercanos ({profile?.province || "Nacional"})
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              {recommendations.map((r) => (
+                <div key={r.id} className="card p-4 border-white/5 hover:border-primary/30 transition-all cursor-pointer group">
+                  <div className="w-full aspect-video bg-surface-light rounded-lg mb-3 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-muted group-hover:text-primary transition-colors" />
+                  </div>
+                  <h4 className="text-[11px] font-black text-white uppercase line-clamp-1">{r.name}</h4>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-[9px] text-primary font-bold uppercase">{r.rarity}</span>
+                    <span className="text-[10px] text-white font-black">{r.points_value} XP</span>
+                  </div>
+                </div>
+              ))}
+              {recommendations.length === 0 && (
+                <div className="col-span-3 card p-8 text-center border-dashed border-border opacity-50">
+                  <p className="text-[10px] text-muted uppercase font-bold">No hay nodos activos en tu provincia base.</p>
+                  <Link href="/configuracion" className="text-[9px] text-primary underline mt-2 block italic">Actualiza tu Provincia</Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* User Proposals */}
           <div className="card p-6">
             <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-6">Tus Propuestas de Puntos</h3>
             <div className="space-y-4">

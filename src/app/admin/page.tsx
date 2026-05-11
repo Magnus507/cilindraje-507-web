@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import AppLayout from "@/components/AppLayout";
 import { Shield, Check, X, MapPin, Eye, Loader2, Award, Trophy, Users } from "lucide-react";
 
 export default function AdminPage() {
@@ -52,11 +51,10 @@ export default function AdminPage() {
     fetchData();
   };
 
-  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
+  if (loading) return <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div>;
 
   return (
-    <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
         <header className="flex items-center gap-4">
           <div className="p-3 bg-destructive/10 rounded-xl text-destructive border border-destructive/20">
             <Shield className="w-8 h-8" />
@@ -135,6 +133,6 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

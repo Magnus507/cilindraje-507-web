@@ -9,7 +9,12 @@ ALTER TABLE stickers ADD COLUMN IF NOT EXISTS description TEXT;
 -- 2. Asegurar que los estados permitidos sean correctos (Opcional pero recomendado)
 -- status puede ser: 'proposed', 'review', 'active', 'suspended'
 
--- 3. Crear política de seguridad para que los usuarios puedan insertar sus propuestas
+-- 3. Actualizar perfiles para incluir provincia y bio
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS province TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS experience_level TEXT;
+
+-- 4. Crear política de seguridad para que los usuarios puedan insertar sus propuestas
 ALTER TABLE stickers ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Usuarios pueden proponer puntos" ON stickers;
@@ -19,3 +24,10 @@ CREATE POLICY "Usuarios pueden proponer puntos" ON stickers
 DROP POLICY IF EXISTS "Todos pueden ver puntos activos" ON stickers;
 CREATE POLICY "Todos pueden ver puntos activos" ON stickers
   FOR SELECT USING (is_active = true OR auth.uid() = creator_id);
+
+-- 5. Insertar territorios base (Provincias de Panamá) si no existen
+INSERT INTO territories (name) 
+VALUES 
+  ('Bocas del Toro'), ('Chiriquí'), ('Coclé'), ('Colón'), ('Darién'), 
+  ('Herrera'), ('Los Santos'), ('Panamá'), ('Panamá Oeste'), ('Veraguas'), ('Guna Yala')
+ON CONFLICT (name) DO NOTHING;
