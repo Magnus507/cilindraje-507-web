@@ -1,101 +1,155 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeft, Trophy, Crown, Medal, Swords } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import AppLayout from "@/components/AppLayout";
+import { Trophy, Flame, Shield, User, Loader2, ArrowUp, ArrowDown, Minus } from "lucide-react";
 
 export default function RankingPage() {
-  const mockFactions = [
-    { rank: 1, name: "Fantasmas del West", points: 145200, color: "text-purple-400", bg: "bg-purple-400/10" },
-    { rank: 2, name: "Titanes del Interior", points: 132150, color: "text-blue-400", bg: "bg-blue-400/10" },
-    { rank: 3, name: "Ángeles de la Capital", points: 98400, color: "text-primary", bg: "bg-primary/10" },
-  ];
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [factions, setFactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"riders" | "factions">("riders");
 
-  const mockPlayers = [
-    { rank: 1, name: "GhostRider507", faction: "Fantasmas del West", points: 12500 },
-    { rank: 2, name: "TitanX", faction: "Titanes del Interior", points: 11200 },
-    { rank: 3, name: "SpeedDemon", faction: "Ángeles de la Capital", points: 9800 },
-    { rank: 4, name: "NightHawk", faction: "Fantasmas del West", points: 8400 },
-    { rank: 5, name: "CruiserPTY", faction: "Independiente", points: 7200 },
-  ];
+  useEffect(() => {
+    fetchRankings();
+  }, []);
+
+  const fetchRankings = async () => {
+    setLoading(true);
+    // Fetch Riders
+    const { data: p } = await supabase
+      .from("profiles")
+      .select("*, factions(name)")
+      .order("total_points", { ascending: false })
+      .limit(100);
+    setProfiles(p || []);
+
+    // Fetch Factions
+    const { data: f } = await supabase
+      .from("factions")
+      .select("*")
+      .order("total_points", { ascending: false })
+      .limit(50);
+    setFactions(f || []);
+    setLoading(false);
+  };
+
+  if (loading) return <AppLayout><div className="flex items-center justify-center h-full"><Loader2 className="animate-spin text-primary" /></div></AppLayout>;
 
   return (
-    <div className="min-h-screen flex flex-col px-4 py-8 max-w-4xl mx-auto relative z-10">
-      
-      <header className="flex items-center gap-4 mb-10">
-        <Link href="/dashboard" className="p-2 rounded-full glass-panel text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Trophy className="w-6 h-6 text-yellow-500" /> Clasificación Nacional
-          </h1>
-          <p className="text-gray-400 text-sm">Temporada 1: Dominio de Asfalto</p>
-        </div>
-      </header>
-
-      <div className="grid md:grid-cols-2 gap-8">
-        
-        {/* Factions Leaderboard */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Swords className="w-5 h-5 text-red-400" /> Top Facciones
-          </h2>
-          
-          <div className="space-y-4">
-            {mockFactions.map((faction, idx) => (
-              <div key={idx} className={`glass-panel p-4 rounded-2xl flex items-center gap-4 ${idx === 0 ? 'border-yellow-500/50 scale-105' : 'border-white/5'}`}>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${idx === 0 ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'}`}>
-                  {idx === 0 ? <Crown className="w-5 h-5" /> : faction.rank}
-                </div>
-                <div className="flex-1">
-                  <h3 className={`font-bold ${faction.color}`}>{faction.name}</h3>
-                  <p className="text-xs text-gray-400 uppercase tracking-wider">Control Territorial</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-black text-white">{faction.points.toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">PTS</p>
-                </div>
-              </div>
-            ))}
+    <AppLayout>
+      <div className="max-w-5xl mx-auto space-y-8">
+        <header className="flex items-end justify-between">
+          <div>
+            <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Hall de la Fama</h1>
+            <p className="text-muted text-sm font-mono tracking-widest uppercase">Escalafón Nacional de Pilotos y Alianzas</p>
           </div>
-        </motion.div>
-
-        {/* Players Leaderboard */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Medal className="w-5 h-5 text-primary" /> Top Pilotos
-          </h2>
-          
-          <div className="glass-panel rounded-2xl overflow-hidden border border-white/5">
-            <div className="p-4 bg-black/40 border-b border-white/5 grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase">
-              <div className="col-span-2 text-center">Rnk</div>
-              <div className="col-span-6">Piloto</div>
-              <div className="col-span-4 text-right">Puntos</div>
-            </div>
-            
-            <div className="divide-y divide-white/5">
-              {mockPlayers.map((player, idx) => (
-                <div key={idx} className="p-4 grid grid-cols-12 gap-2 items-center hover:bg-white/5 transition-colors">
-                  <div className="col-span-2 flex justify-center">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${idx < 3 ? 'bg-primary/20 text-primary' : 'text-gray-400'}`}>
-                      {player.rank}
-                    </span>
-                  </div>
-                  <div className="col-span-6">
-                    <p className="font-bold text-white truncate">{player.name}</p>
-                    <p className="text-xs text-gray-500 truncate">{player.faction}</p>
-                  </div>
-                  <div className="col-span-4 text-right font-mono text-sm text-primary">
-                    {player.points.toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex bg-surface-light border border-border p-1 rounded-xl">
+            <button 
+              onClick={() => setActiveTab("riders")}
+              className={`px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all ${activeTab === "riders" ? "bg-primary text-black" : "text-muted hover:text-white"}`}
+            >
+              Riders
+            </button>
+            <button 
+              onClick={() => setActiveTab("factions")}
+              className={`px-6 py-2 text-[10px] font-black uppercase rounded-lg transition-all ${activeTab === "factions" ? "bg-primary text-black" : "text-muted hover:text-white"}`}
+            >
+              Facciones
+            </button>
           </div>
-        </motion.div>
+        </header>
 
+        {activeTab === "riders" ? (
+          <div className="card overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-light/50 border-b border-border">
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Posición</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Rider</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Facción</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Máquina</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold text-right">Puntos Totales</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {profiles.map((p, i) => (
+                  <tr key={p.id} className={`hover:bg-surface-light/30 transition-colors ${i === 0 ? "bg-primary/5" : ""}`}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black ${i === 0 ? "bg-primary text-black" : i === 1 ? "bg-gray-400 text-black" : i === 2 ? "bg-amber-800 text-white" : "bg-surface-light text-muted"}`}>
+                          {i + 1}
+                        </span>
+                        {i === 0 ? <Trophy className="w-4 h-4 text-primary animate-pulse" /> : <Minus className="w-3 h-3 text-muted/30" />}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-surface-light flex items-center justify-center border border-border">
+                          <User className="w-4 h-4 text-muted" />
+                        </div>
+                        <span className="text-sm font-bold text-white uppercase tracking-tight">{p.username}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs text-accent font-semibold uppercase">{p.factions?.name || "Lobo Solitario"}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs text-muted font-mono">{p.motorcycle_model || "---"}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="text-sm font-black text-primary neon-text">{(p.total_points || 0).toLocaleString()}</span>
+                    </td>
+                  </tr>
+                ))}
+                {profiles.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-20 text-center text-muted italic">No se han detectado pilotos registrados en esta temporada.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="card overflow-hidden">
+             <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-light/50 border-b border-border">
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Rango</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold">Facción</th>
+                  <th className="px-6 py-4 text-[10px] text-muted uppercase font-bold text-right">Puntos de Alianza</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {factions.map((f, i) => (
+                  <tr key={f.id} className="hover:bg-surface-light/30 transition-colors">
+                    <td className="px-6 py-4">
+                       <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-black ${i === 0 ? "bg-accent text-white" : "bg-surface-light text-muted"}`}>
+                          {i + 1}
+                        </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <Shield className={`w-5 h-5 ${i === 0 ? "text-accent" : "text-muted"}`} />
+                        <span className="text-sm font-bold text-white uppercase">{f.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="text-sm font-black text-accent">{(f.total_points || 0).toLocaleString()}</span>
+                    </td>
+                  </tr>
+                ))}
+                {factions.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="px-6 py-20 text-center text-muted italic">No hay facciones registradas.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-    </div>
+    </AppLayout>
   );
 }
