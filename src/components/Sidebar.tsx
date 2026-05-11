@@ -20,6 +20,7 @@ const navItems = [
   { href: "/tienda", icon: ShoppingBag, label: "Tienda" },
   { href: "/eventos", icon: CalendarDays, label: "Eventos" },
   { href: "/configuracion", icon: Settings, label: "Configuración" },
+  { href: "/misiones/proponer", icon: MapPin, label: "Expandir Radar", special: true },
 ];
 
 export default function Sidebar() {
@@ -41,9 +42,9 @@ export default function Sidebar() {
           const active = pathname === item.href;
           return (
             <Link key={item.href} href={item.href}>
-              <div className={`nav-item ${active ? "active" : ""}`}>
-                <item.icon className="w-4 h-4 flex-shrink-0" />
-                <span>{item.label}</span>
+              <div className={`nav-item ${active ? "active" : ""} ${item.special ? "bg-primary/10 border border-primary/20 text-primary shadow-[0_0_15px_rgba(245,158,11,0.1)] mt-4 mb-2" : ""}`}>
+                <item.icon className={`w-4 h-4 flex-shrink-0 ${item.special ? "animate-pulse" : ""}`} />
+                <span className={item.special ? "font-black" : ""}>{item.label}</span>
               </div>
             </Link>
           );
