@@ -1,65 +1,73 @@
-import Image from "next/image";
+"use client";
+
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, MapPin, Scan, Trophy, Users } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden px-4">
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="text-center z-10 max-w-4xl"
+      >
+        <div className="inline-block mb-4 px-4 py-1.5 rounded-full glass-panel border-primary/20 text-primary text-sm font-semibold tracking-wider uppercase">
+          Acceso Restringido - Nivel 1
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+          <span className="text-white">CILINDRAJE </span>
+          <span className="text-primary neon-text">507</span>
+        </h1>
+        
+        <p className="text-gray-400 text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+          La red definitiva de moteros en Panamá. Escanea códigos QR ocultos en la ciudad, suma puntos para tu facción y domina los territorios.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          <Link href="/login" className="w-full sm:w-auto">
+            <button className="w-full group relative px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full -translate-x-full transition-transform duration-500 skew-x-12" />
+              <span className="flex items-center justify-center gap-2">
+                INICIAR SESIÓN
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </button>
+          </Link>
+          
+          <Link href="/registro-motero" className="w-full sm:w-auto">
+            <button className="w-full px-8 py-4 glass-panel text-white font-bold rounded-xl hover:bg-white/5 transition-all duration-300 border-white/10 hover:border-primary/50">
+              REGISTRARSE
+            </button>
+          </Link>
         </div>
-      </main>
+      </motion.div>
+
+      {/* Feature Grid */}
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mt-24 z-10 w-full max-w-5xl"
+      >
+        {[
+          { icon: <Scan className="w-8 h-8 text-primary" />, title: "Escanea QRs", desc: "Encuentra stickers secretos" },
+          { icon: <MapPin className="w-8 h-8 text-accent" />, title: "Conquista", desc: "Domina territorios" },
+          { icon: <Users className="w-8 h-8 text-blue-400" />, title: "Facciones", desc: "Únete a un equipo" },
+          { icon: <Trophy className="w-8 h-8 text-yellow-400" />, title: "Ranking", desc: "Compite nacionalmente" }
+        ].map((feature, idx) => (
+          <div key={idx} className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center group hover:border-primary/50 transition-colors">
+            <div className="mb-4 p-3 rounded-full bg-white/5 group-hover:scale-110 transition-transform">
+              {feature.icon}
+            </div>
+            <h3 className="text-white font-bold mb-2">{feature.title}</h3>
+            <p className="text-sm text-gray-400">{feature.desc}</p>
+          </div>
+        ))}
+      </motion.div>
     </div>
   );
 }
