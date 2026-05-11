@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Map, ScanLine, Target, Trophy,
   Shield, Wrench, Medal, ShoppingBag, CalendarDays,
-  Settings, Users, MapPin
+  Settings, Users, MapPin, Terminal
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -25,6 +27,18 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    async function checkRole() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase.from("profiles").select("role").eq("id", session.user.id).single();
+        if (data?.role === 'admin') setIsAdmin(true);
+      }
+    }
+    checkRole();
+  }, []);
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[220px] bg-surface border-r border-border flex flex-col z-40">
@@ -49,6 +63,14 @@ export default function Sidebar() {
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link href="/admin">
+            <div className={`nav-item ${pathname === '/admin' ? "bg-destructive text-white" : "bg-destructive/10 text-destructive border border-destructive/20"} mt-4 font-black uppercase shadow-[0_0_20px_rgba(239,68,68,0.2)]`}>
+              <Terminal className="w-4 h-4 flex-shrink-0" />
+              <span>Torre de Control</span>
+            </div>
+          </Link>
+        )}
       </nav>
 
       {/* Event Countdown at bottom */}
