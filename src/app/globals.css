@@ -172,7 +172,21 @@ body {
   font-family: var(--font-mono), monospace;
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--primary);
-  min-width: 2.5rem;
-  text-align: center;
+/* Tactical Leaflet Popups */
+.leaflet-popup-content-wrapper {
+  background: rgba(17, 17, 24, 0.9) !important;
+  color: white !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  border-radius: 8px !important;
+  backdrop-filter: blur(8px) !important;
 }
+
+.leaflet-popup-tip {
+  background: rgba(17, 17, 24, 0.9) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.leaflet-container {
+  font-family: inherit !important;
+}
+

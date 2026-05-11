@@ -4,10 +4,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  User, Flame, MapPin, ScanLine, ShoppingBag, CalendarDays, Target,
-  Trophy, Shield, Wrench, Medal, Clock, Zap, Star, ChevronRight
-} from "lucide-react";
+import dynamic from "next/dynamic";
+import { User, Flame, MapPin, ScanLine, ShoppingBag, CalendarDays, Target,
+  Trophy, Shield, Wrench, Medal, Clock, Zap, Star, ChevronRight } from "lucide-react";
+
+const TacticalMap = dynamic(() => import("@/components/TacticalMap"), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-surface-light animate-pulse rounded-xl" />
+});
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<any>(null);
@@ -94,49 +98,8 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider">Mapa Táctico — Panamá</h3>
             </div>
-            <div className="relative w-full h-[300px] bg-surface-light rounded-xl overflow-hidden border border-border">
-              {/* Panama SVG outline */}
-              <svg viewBox="0 0 800 350" className="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="xMidYMid meet">
-                <path d="M50,180 C80,160 120,140 160,145 C200,150 220,130 260,120 C300,110 340,100 380,105 C420,110 440,95 480,90 C520,85 540,80 580,85 C620,90 640,100 680,110 C700,115 720,130 740,140 L750,150 C740,170 720,185 700,195 C680,205 660,210 640,220 C620,230 590,240 570,245 C550,250 530,255 510,250 C490,245 470,235 450,230 C430,225 410,230 390,235 C370,240 350,250 330,255 C310,260 290,258 270,250 C250,242 230,235 210,240 C190,245 170,255 150,260 C130,265 110,260 90,250 C70,240 55,225 45,210 C40,200 42,190 50,180 Z" fill="none" stroke="#f59e0b" strokeWidth="2" />
-                {/* Provinces labels */}
-                <text x="120" y="200" fill="#71717a" fontSize="10" fontWeight="bold">Chiriquí</text>
-                <text x="250" y="230" fill="#71717a" fontSize="10" fontWeight="bold">Veraguas</text>
-                <text x="380" y="210" fill="#71717a" fontSize="10" fontWeight="bold">Coclé</text>
-                <text x="500" y="200" fill="#71717a" fontSize="10" fontWeight="bold">Panamá</text>
-                <text x="620" y="160" fill="#71717a" fontSize="10" fontWeight="bold">Darién</text>
-                <text x="300" y="170" fill="#71717a" fontSize="9">Herrera</text>
-                <text x="200" y="170" fill="#71717a" fontSize="9">Ngäbe-Buglé</text>
-                <text x="440" y="140" fill="#71717a" fontSize="9">Colón</text>
-                <text x="550" y="230" fill="#71717a" fontSize="9">Kuna Yala</text>
-                <text x="430" y="230" fill="#71717a" fontSize="9">Panamá Oeste</text>
-              </svg>
-              {/* Real sticker dots from DB */}
-              {stickers.map((st) => {
-                const x = ((st.longitude + 83) / 6) * 100;
-                const y = ((10 - st.latitude) / 3) * 100;
-                const color = st.rarity === "legendary" ? "bg-primary" : st.rarity === "epic" ? "bg-accent" : st.rarity === "rare" ? "bg-blue-400" : "bg-white";
-                return (
-                  <div key={st.id} className="absolute group" style={{ left: `${Math.max(5, Math.min(95, x))}%`, top: `${Math.max(5, Math.min(95, y))}%` }}>
-                    <div className={`w-3 h-3 ${color} rounded-full`} />
-                    <div className={`absolute inset-0 w-3 h-3 ${color} rounded-full map-dot-ping`} />
-                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 hidden group-hover:block glass-panel px-2 py-1 rounded text-[9px] text-white whitespace-nowrap z-10">{st.name} ({st.rarity})</div>
-                  </div>
-                );
-              })}
-              {stickers.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center text-muted text-sm">No hay stickers desplegados aún</div>
-              )}
-              {/* Legend */}
-              <div className="absolute bottom-3 left-3 glass-panel p-2.5 rounded-lg text-[9px] space-y-1">
-                {[
-                  { c: "bg-white", l: "Normales" },
-                  { c: "bg-blue-400", l: "Raros" },
-                  { c: "bg-accent", l: "Épicos" },
-                  { c: "bg-primary", l: "Legendarios" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 text-muted"><div className={`w-2 h-2 ${item.c} rounded-full`} />{item.l}</div>
-                ))}
-              </div>
+            <div className="relative w-full h-[350px] bg-surface-light rounded-xl overflow-hidden border border-border">
+              <TacticalMap stickers={stickers} />
             </div>
           </div>
 
