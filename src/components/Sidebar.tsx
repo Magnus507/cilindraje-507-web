@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Map, ScanLine, Target, Trophy,
   Shield, Wrench, Medal, ShoppingBag, CalendarDays,
-  Settings, Users
+  Settings, Users, MapPin
 } from "lucide-react";
 
 const navItems = [
