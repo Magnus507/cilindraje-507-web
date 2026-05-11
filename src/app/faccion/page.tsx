@@ -54,6 +54,10 @@ export default function FaccionPage() {
 
   const createFaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (userProfile?.faction_id) {
+      alert("Ya perteneces a una alianza. Debes abandonarla para fundar una nueva.");
+      return;
+    }
     setCreating(true);
     const { data, error } = await supabase.from("factions").insert([newFaccion]).select();
     if (!error && data) {
@@ -61,6 +65,19 @@ export default function FaccionPage() {
       setNewFaccion({ name: "", description: "", color_hex: "#f59e0b" });
     }
     setCreating(false);
+  };
+
+  const updateFactionColor = async (color: string) => {
+    if (!userProfile?.faction_id) return;
+    const { error } = await supabase.from("factions").update({ color_hex: color }).eq("id", userProfile.faction_id);
+    if (!error) await fetchData();
+  };
+
+  const [orders, setOrders] = useState("");
+  const publishOrders = async () => {
+    if (!userProfile?.faction_id) return;
+    const { error } = await supabase.from("factions").update({ orders: orders }).eq("id", userProfile.faction_id);
+    if (!error) alert("Directivas de mando publicadas.");
   };
 
   const copyInvite = () => {
@@ -120,7 +137,7 @@ export default function FaccionPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-4">
                         <h2 className="text-5xl font-black text-white uppercase italic tracking-tighter">{userProfile.factions.name}</h2>
-                        <span className="px-4 py-1.5 bg-accent text-white text-[10px] font-black rounded-full uppercase shadow-lg shadow-accent/40">Alianza Elite</span>
+                        <span className="px-4 py-1.5 text-white text-[10px] font-black rounded-full uppercase shadow-lg" style={{ backgroundColor: userProfile.factions.color_hex }}>Alianza Activa</span>
                       </div>
                       <p className="text-muted text-sm mt-4 max-w-xl font-medium leading-relaxed">{userProfile.factions.description || "Esta facción aún no ha definido su manifiesto de guerra."}</p>
                       
@@ -135,7 +152,7 @@ export default function FaccionPage() {
                         </div>
                         <button 
                           onClick={copyInvite}
-                          className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase rounded-xl hover:bg-accent hover:text-white transition-all flex items-center gap-2 shadow-xl"
+                          className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase rounded-xl hover:scale-105 transition-all flex items-center gap-2 shadow-xl"
                         >
                           <UserPlus className="w-4 h-4" /> Reclutar Riders
                         </button>
@@ -177,6 +194,7 @@ export default function FaccionPage() {
                       {["#f59e0b", "#8b5cf6", "#ef4444", "#10b981", "#3b82f6"].map(c => (
                         <div 
                           key={c} 
+                          onClick={() => updateFactionColor(c)}
                           className={`w-10 h-10 rounded-xl border-4 cursor-pointer transition-all hover:scale-110 shadow-lg ${userProfile.factions.color_hex === c ? "border-white" : "border-transparent"}`} 
                           style={{ background: c }} 
                         />
@@ -191,9 +209,16 @@ export default function FaccionPage() {
                     <textarea 
                       className="w-full bg-surface border border-border rounded-xl p-4 text-xs text-white outline-none focus:border-accent resize-none transition-all placeholder:text-muted/30"
                       rows={4}
+                      value={orders}
+                      onChange={e => setOrders(e.target.value)}
                       placeholder="Escribe las directivas para tu facción..."
                     />
-                    <button className="w-full py-3 bg-accent text-white text-[10px] font-black uppercase rounded-xl hover:bg-accent/80 transition-all shadow-lg shadow-accent/20">Publicar Orden</button>
+                    <button 
+                      onClick={publishOrders}
+                      className="w-full py-3 bg-accent text-white text-[10px] font-black uppercase rounded-xl hover:bg-accent/80 transition-all shadow-lg shadow-accent/20"
+                    >
+                      Publicar Orden
+                    </button>
                   </div>
 
                   <div className="pt-6 border-t border-border space-y-3">
@@ -250,8 +275,14 @@ export default function FaccionPage() {
                         </div>
                       ) : (
                         <button 
-                          onClick={() => joinFaction(f.id)}
-                          className="px-8 py-3.5 bg-primary text-black text-[10px] font-black rounded-xl hover:bg-white hover:shadow-2xl transition-all uppercase shadow-lg shadow-primary/20 active:scale-95"
+                          onClick={() => {
+                            if (userProfile?.faction_id) {
+                              alert("Ya perteneces a una alianza. Sal de la actual para unirte a esta.");
+                            } else {
+                              joinFaction(f.id);
+                            }
+                          }}
+                          className={`px-8 py-3.5 text-[10px] font-black rounded-xl transition-all uppercase shadow-lg active:scale-95 ${userProfile?.faction_id ? "bg-muted text-surface cursor-not-allowed opacity-50" : "bg-primary text-black hover:bg-white hover:shadow-2xl shadow-primary/20"}`}
                         >
                           Sincronizar
                         </button>
@@ -296,10 +327,10 @@ export default function FaccionPage() {
                   </div>
                   <button 
                     type="submit" 
-                    disabled={creating}
-                    className="w-full py-5 bg-white text-black font-black text-xs uppercase rounded-xl hover:bg-primary transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-95 disabled:opacity-50"
+                    disabled={creating || userProfile?.faction_id}
+                    className="w-full py-5 bg-white text-black font-black text-xs uppercase rounded-xl hover:bg-primary transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-95 disabled:opacity-20"
                   >
-                    {creating ? <Loader2 className="w-5 h-5 animate-spin" /> : "ESTABLECER COMANDO"}
+                    {creating ? <Loader2 className="w-5 h-5 animate-spin" /> : userProfile?.faction_id ? "Ya tienes Alianza" : "ESTABLECER COMANDO"}
                   </button>
                 </form>
               </div>

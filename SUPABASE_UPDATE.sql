@@ -31,3 +31,6 @@ VALUES
   ('Bocas del Toro'), ('Chiriquí'), ('Coclé'), ('Colón'), ('Darién'), 
   ('Herrera'), ('Los Santos'), ('Panamá'), ('Panamá Oeste'), ('Veraguas'), ('Guna Yala')
 ON CONFLICT (name) DO NOTHING;
+-- 6. Actualizar facciones para soportar personalización
+ALTER TABLE factions ADD COLUMN IF NOT EXISTS color_hex TEXT DEFAULT '#f59e0b';
+ALTER TABLE factions ADD COLUMN IF NOT EXISTS orders TEXT;
