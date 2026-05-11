@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import AppLayout from "@/components/AppLayout";
-import { Medal, Trophy, Star, Zap, Map, Loader2, Lock, CheckCircle2 } from "lucide-react";
+import { Medal, Trophy, Star, Zap, Map, Loader2, Lock, CheckCircle2, ShieldCheck } from "lucide-react";
 
 export default function LogrosPage() {
   const [profile, setProfile] = useState<any>(null);
@@ -36,44 +35,41 @@ export default function LogrosPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
-        <header>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Logros y Condecoraciones</h1>
-          <p className="text-muted text-sm font-mono tracking-widest uppercase">Historial de Hazañas en la Carretera</p>
-        </header>
+      <header>
+        <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Logros y Condecoraciones</h1>
+        <p className="text-muted text-sm font-mono tracking-widest uppercase">Historial de Hazañas en la Carretera</p>
+      </header>
 
-        <div className="grid grid-cols-3 gap-6">
-          {achievements.map((ach) => {
-            const isUnlocked = ach.current >= ach.req;
-            const progress = Math.min(100, (ach.current / ach.req) * 100);
+      <div className="grid grid-cols-3 gap-6">
+        {achievements.map((ach) => {
+          const isUnlocked = ach.current >= ach.req;
+          const progress = Math.min(100, (ach.current / ach.req) * 100);
 
-            return (
-              <div key={ach.id} className={`card p-6 relative overflow-hidden transition-all ${isUnlocked ? "border-primary/40 bg-primary/5" : "opacity-70"}`}>
-                {isUnlocked && <div className="absolute top-2 right-2"><CheckCircle2 className="w-5 h-5 text-primary" /></div>}
-                {!isUnlocked && <div className="absolute top-2 right-2"><Lock className="w-4 h-4 text-muted" /></div>}
-                
-                <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center ${isUnlocked ? "bg-primary text-black" : "bg-surface-light text-muted"}`}>
-                  {ach.icon}
+          return (
+            <div key={ach.id} className={`card p-6 relative overflow-hidden transition-all ${isUnlocked ? "border-primary/40 bg-primary/5" : "opacity-70"}`}>
+              {isUnlocked && <div className="absolute top-2 right-2"><CheckCircle2 className="w-5 h-5 text-primary" /></div>}
+              {!isUnlocked && <div className="absolute top-2 right-2"><Lock className="w-4 h-4 text-muted" /></div>}
+              
+              <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center ${isUnlocked ? "bg-primary text-black" : "bg-surface-light text-muted"}`}>
+                {ach.icon}
+              </div>
+              
+              <h3 className={`font-black uppercase italic ${isUnlocked ? "text-white" : "text-muted"}`}>{ach.title}</h3>
+              <p className="text-[10px] text-muted mt-1 uppercase tracking-wider">{ach.desc}</p>
+              
+              <div className="mt-6 space-y-2">
+                <div className="flex justify-between text-[10px] font-bold uppercase font-mono">
+                  <span className="text-muted">Progreso</span>
+                  <span className={isUnlocked ? "text-primary" : "text-muted"}>{ach.current} / {ach.req}</span>
                 </div>
-                
-                <h3 className={`font-black uppercase italic ${isUnlocked ? "text-white" : "text-muted"}`}>{ach.title}</h3>
-                <p className="text-[10px] text-muted mt-1 uppercase tracking-wider">{ach.desc}</p>
-                
-                <div className="mt-6 space-y-2">
-                  <div className="flex justify-between text-[10px] font-bold uppercase font-mono">
-                    <span className="text-muted">Progreso</span>
-                    <span className={isUnlocked ? "text-primary" : "text-muted"}>{ach.current} / {ach.req}</span>
-                  </div>
-                  <div className="progress-bar h-1.5">
-                    <div className={`progress-bar-fill h-full transition-all duration-1000 ${!isUnlocked && "bg-muted/50"}`} style={{ width: `${progress}%`, background: isUnlocked ? undefined : "#3f3f46" }} />
-                  </div>
+                <div className="progress-bar h-1.5">
+                  <div className={`progress-bar-fill h-full transition-all duration-1000 ${!isUnlocked && "bg-muted/50"}`} style={{ width: `${progress}%`, background: isUnlocked ? undefined : "#3f3f46" }} />
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
-
-import { ShieldCheck } from "lucide-react";
