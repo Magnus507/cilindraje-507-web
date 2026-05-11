@@ -1,45 +1,55 @@
 "use client";
 
-import { Trophy, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import { Trophy, ChevronRight, LogOut, Bell, Mail } from "lucide-react";
 
 export default function TopBar() {
+  const [profile, setProfile] = useState<any>(null);
+  const [season, setSeason] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function load() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: p } = await supabase.from("profiles").select("username, total_points").eq("id", session.user.id).single();
+      setProfile(p);
+      const { data: s } = await supabase.from("seasons").select("*").eq("is_active", true).single();
+      setSeason(s);
+    }
+    load();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
+  const userLevel = Math.floor((profile?.total_points || 0) / 500) + 1;
+  const initials = (profile?.username || "??").substring(0, 2).toUpperCase();
+
   return (
     <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-6 sticky top-0 z-30">
-      {/* Season Progress */}
       <div className="flex items-center gap-4 flex-1">
         <div className="flex items-center gap-3 px-4 py-1.5 card-inner">
           <Trophy className="w-4 h-4 text-primary" />
           <div>
-            <p className="text-[10px] font-bold text-primary uppercase tracking-wider">Temporada 1</p>
-            <p className="text-[9px] text-muted uppercase">« La Guerra por las Provincias »</p>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-wider">{season?.name || "Sin Temporada Activa"}</p>
           </div>
         </div>
-        <div className="flex-1 max-w-md">
-          <div className="progress-bar h-2">
-            <div className="progress-bar-fill h-full" style={{ width: "65%" }} />
-          </div>
-        </div>
-        <span className="text-xs text-muted font-mono">80 días restantes</span>
       </div>
-
-      {/* User Quick Access */}
       <div className="flex items-center gap-4">
-        <button className="relative p-2 text-muted hover:text-white transition-colors">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-          <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-        </button>
-        <button className="p-2 text-muted hover:text-white transition-colors">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-        </button>
+        <button className="relative p-2 text-muted hover:text-white transition-colors"><Bell className="w-5 h-5" /></button>
+        <button className="p-2 text-muted hover:text-white transition-colors"><Mail className="w-5 h-5" /></button>
+        <button onClick={handleLogout} className="p-2 text-muted hover:text-destructive transition-colors" title="Cerrar Sesión"><LogOut className="w-5 h-5" /></button>
         <div className="flex items-center gap-3 pl-4 border-l border-border">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-amber-600 flex items-center justify-center text-black font-bold text-sm">
-            RA
-          </div>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-amber-600 flex items-center justify-center text-black font-bold text-sm">{initials}</div>
           <div className="text-right">
-            <p className="text-sm font-bold text-white">RIDER_ALPHA</p>
-            <p className="text-[10px] text-muted">Nivel 32</p>
+            <p className="text-sm font-bold text-white">{profile?.username || "..."}</p>
+            <p className="text-[10px] text-muted">Nivel {userLevel}</p>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted" />
         </div>
       </div>
     </header>
